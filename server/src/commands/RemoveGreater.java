@@ -1,16 +1,16 @@
 package commands;
 
 import Organization.Organization;
+import db.DBConnection;
 import exceptions.WrongArgumentInRequestInScriptException;
 import exceptions.WrongNumberOfArgumentsException;
 import requesters.OrganizationReguester;
 import response.Response;
 import utility.ScriptChecker;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.TreeMap;
+import java.sql.Array;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  */
 public class RemoveGreater extends Command{
     public RemoveGreater() {
+        this.needDB=true;
         this.needScanner = true;
     }
     @Override
@@ -31,24 +32,37 @@ public class RemoveGreater extends Command{
     }
 
     @Override
-    public Response execute(){
-        System.out.println("Выполняется команда "+getName());
-        Map<Integer, Organization> collection = collectionManager.getCollection();
-        if (collection.isEmpty()) {
-            response = new Response("Коллекция пуста!");
-            return response;
+    public Response execute(DBConnection dbConnection){
+        try {
+            System.out.println("Выполняется команда " + getName());
+            Map<Integer, Organization> collection = collectionManager.getCollection();
+            if (collection.isEmpty()) {
+                response = new Response("Коллекция пуста!");
+                return response;
+            }
+            Organization organization = getCommandArgument().getOrganizationArgument();
+            int count = 0;
+            Integer[] keys = collectionManager.getCollection().keySet().toArray(new Integer[]{});
+            for(Integer key : keys) {
+                if (dbConnection.checkOrganizationOwner(key, getCommandArgument().getLogin()) && collection.get(key).compareTo(organization) > 0) {
+                    if (dbConnection.removeOrganization(key)) {
+                        collectionManager.deleteFromTheCollection(key);
+                        count++;
+                    }
+                }
+            }
+            String responseMessage;
+            if (count == 0) responseMessage = "Не было обнаружено элементов, больших заданного.";
+            else responseMessage = "Было удалено " + count + " элементов. ";
+            response = new Response(responseMessage);
+            System.out.println("Команда " + getName() + " была выполнена.");
+        } catch (SQLException e){
+            response = new Response(e.getMessage());
         }
-        Organization organization = getCommandArgument().getOrganizationArgument();
-        int count = doCommand(organization);
-        String responseMessage;
-        if (count == 0) responseMessage = "Не было обнаружено элементов, больших заданного.";
-        else responseMessage = "Было удалено " + count + " элементов. ";
-        response = new Response(responseMessage);
-        System.out.println("Команда "+getName()+" была выполнена.");
         return response;
     }
 
-    public int doCommand(Organization organization){
+    /*public int doCommand(Organization organization){
         Map<Integer, Organization> collection = collectionManager.getCollection();
         Map<Integer, Organization> removedElements = collectionManager.getCollection().entrySet().stream()
                 .filter(entry -> entry.getValue().compareTo(organization) <= 0)
@@ -56,5 +70,5 @@ public class RemoveGreater extends Command{
         int count = collection.size() - removedElements.size();
         collectionManager.changeCollection(new TreeMap<>(removedElements));
         return count;
-    }
+    }*/
 }

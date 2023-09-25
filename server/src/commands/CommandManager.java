@@ -31,6 +31,8 @@ public class CommandManager {
         commands.put("remove", new Remove());
         commands.put("clear", new Clear());
         commands.put("save", new Save());
+        commands.put("login_user", new LoginUser());
+        commands.put("register_user", new RegisterUser());
         commands.put("execute_script", new ExecuteScript());
         commands.put("exit", new Exit());
         commands.put("remove_greater", new RemoveGreater());
@@ -55,10 +57,10 @@ public class CommandManager {
             if (!commands.containsKey(arguments[0])) throw new WrongCommandNameException();
             Command command = commands.get(arguments[0]);
             command.setCollectionManager(collectionManager);
-            if(command.getName().equals("execute_script")) {
-                ((ExecuteScript) command).setScriptHandler(scriptHandler);
-                command.setCommandArgument(arguments[1]);
-            }
+            //if(command.getName().equals("execute_script")) {
+            //    ((ExecuteScript) command).setScriptHandler(scriptHandler);
+             //   command.setCommandArgument(arguments[1]);
+            //}
             if (ScriptChecker.isScriptInProcess) System.out.println("Команда "+command.getName()+" запущена.");
             response = command.execute();
             return response;

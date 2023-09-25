@@ -2,20 +2,22 @@ package managers;
 
 import Organization.Organization;
 import com.google.gson.JsonSyntaxException;
+import db.DBConnection;
 import exceptions.WrongDeserializationError;
-import managers.FileManager;
 import validators.IdDuplicateValidator;
 import validators.OrganizationValidator;
 import validators.ValidatorWithException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * Управляет коллекцией.
@@ -24,12 +26,13 @@ public class CollectionManager {
     private int IdCounter=1;
     private Set<Integer> IdSet=new HashSet<>();
     private FileManager fileManager;
-    public CollectionManager(FileManager fileManager) {
-        this.fileManager = fileManager;
+    public CollectionManager(DBConnection dbConnection) {
+        this.dbConnection=dbConnection;
     }
     private Map<Integer, Organization> collection;
     private LocalDateTime lastTimeOfSaving;
     private LocalDateTime initiationDate;
+    private DBConnection dbConnection;
     /**
      * @return Время последнего сохранения коллекции.
      */
@@ -54,8 +57,8 @@ public class CollectionManager {
      * @param organization Элемент Organization для добавления в коллекцию.
      */
     public void addToTheCollection(int key, Organization organization) {
-        setId(organization);
-        organization.setCreationDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        //setId(organization);
+//        organization.setCreationDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         collection.put(key ,organization);
     }
 
@@ -93,8 +96,10 @@ public class CollectionManager {
      * @throws DateTimeParseException Если при чтении файла поле creationDate содержит данные, не соответствующие формату YYYY-MM-DDTHH-MM-SS
      * @throws IOException Если возникли другие ошибки ввода-вывода.
      */
-    public void loadCollectionFromFile() throws FileNotFoundException,  JsonSyntaxException, WrongDeserializationError, DateTimeParseException,IOException {
-        ValidatorWithException<Organization> organizationValidator= new OrganizationValidator();
+    public void loadCollectionFromDB() throws FileNotFoundException,  JsonSyntaxException, WrongDeserializationError, DateTimeParseException, SQLException,IOException {
+        this.collection = dbConnection.getCollectionFromDB();
+        initiationDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        /*ValidatorWithException<Organization> organizationValidator= new OrganizationValidator();
         ValidatorWithException<Map<Integer, Organization>> idDuplicateValidator = new IdDuplicateValidator();
         Map<Integer, Organization> collection = fileManager.readCollectionFromFile();
         initiationDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -114,7 +119,8 @@ public class CollectionManager {
             this.collection = collection;
         } catch (WrongDeserializationError e) {
             throw new WrongDeserializationError(e.getMessage());
-        }
+        }*/
+
     }
 
     /**

@@ -1,11 +1,8 @@
 package commandProcessing;
 
-import Organization.Organization;
-import Organization.Coordinates;
-import Organization.Address;
-import com.sun.tools.javac.Main;
 import commands.Command;
 import commands.CommandManager;
+import db.DBConnection;
 import exceptions.WrongDeserializationError;
 import managers.CollectionManager;
 import managers.FileManager;
@@ -14,24 +11,28 @@ import response.Response;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class CommandProcessor {
     Response response;
-    String args;
     FileManager fileManager;
     CollectionManager collectionManager;
-    public CommandProcessor(String args){
-        this.args = args;
+    DBConnection dbConnection;
+    public CommandProcessor( DBConnection dbConnection){
+        this.dbConnection=dbConnection;
     }
     public void loadCollection(){
         try {
-            fileManager= new FileManager(args);
-            collectionManager = new CollectionManager(fileManager);
-            collectionManager.loadCollectionFromFile();
+           // fileManager= new FileManager();
+            collectionManager = new CollectionManager(dbConnection);
+            collectionManager.loadCollectionFromDB();
         } catch(FileNotFoundException e){
             System.out.println(e);
             System.exit(1);
         } catch(WrongDeserializationError e){
+            System.out.println(e);
+            System.exit(1);
+        } catch(SQLException e){
             System.out.println(e);
             System.exit(1);
         } catch(IOException e){
@@ -42,7 +43,15 @@ public class CommandProcessor {
     public Response processRequest(Request request) {
             Command command = convertToCommand(request);
             command.setCollectionManager(collectionManager);
-            response = command.execute();
+            try{
+                dbConnection.loginUser(command.getCommandArgument().getLogin(), command.getCommandArgument().getPassword());
+            } catch (SQLException e){
+                System.out.println(e);
+            }
+            if(command.needDB)
+                response=command.execute(dbConnection);
+            else
+                response = command.execute();
             return response;
     }
 
