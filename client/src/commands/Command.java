@@ -24,33 +24,31 @@ public abstract class Command implements Executable,Infoable, Argumentable {
     @Override
     public abstract String getName();
 
-
+    /**
+     * Запускает команду, которая не требует сканер.
+     * @param arguments Строка, содержащая имя команды и ее аргументы.
+     * @throws WrongNumberOfArgumentsException Если было введено неверное количество аргументов команды.
+     */
     @Override
-    public Command execute(String login, String password){return this;}
-    @Override
-    public Command execute(String[] arguments, String login, String password) throws WrongNumberOfArgumentsException{return this;};
+    public Command execute(String[] arguments) throws WrongNumberOfArgumentsException{return null;};
     /**
      * Запускает команду, которая требует сканер.
      * @param arguments Строка, содержащая имя команды и ее аргументы.
      * @throws WrongNumberOfArgumentsException Если было введено неверное количество аргументов команды.
      */
     @Override
-    public Command execute(Scanner scanner, String[] arguments,String login, String password) throws WrongNumberOfArgumentsException{return this;};
+    public Command execute(Scanner scanner, String[] arguments) throws WrongNumberOfArgumentsException{return null;};
     @Override
-    public void setCommandArgument(String login, String password){
-        this.commandArgument=new CommandArgument(login, password);
-    }
-    @Override
-    public void setCommandArgument(String key, String login, String password){
-        this.commandArgument=new CommandArgument(key, login, password);
+    public void setCommandArgument(String key){
+        this.commandArgument=new CommandArgument(key);
     };
     @Override
-    public void setCommandArgument(Organization organization,String login, String password){
-        this.commandArgument=new CommandArgument(organization, login, password);
+    public void setCommandArgument(Organization organization){
+        this.commandArgument=new CommandArgument(organization);
     };
     @Override
-    public void setCommandArgument(String key, Organization organization, String login, String password){
-        this.commandArgument=new CommandArgument(key, organization, login, password);
+    public void setCommandArgument(String key, Organization organization){
+        this.commandArgument=new CommandArgument(key, organization);
     };
     @Override
     public CommandArgument getCommandArgument(){

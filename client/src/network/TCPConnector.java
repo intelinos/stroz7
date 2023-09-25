@@ -58,7 +58,4 @@ public class TCPConnector {
             System.out.println(e);
         } return null;
     }
-    public Socket getSock(){
-        return sock;
-    }
 }

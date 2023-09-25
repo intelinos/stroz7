@@ -8,4 +8,5 @@ public enum OrganizationType {
     OPEN_JOINT_STOCK_COMPANY,
     PRIVATE_LIMITED_COMPANY,
     PUBLIC;
+
 }

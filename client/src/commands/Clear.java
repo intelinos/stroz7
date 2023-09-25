@@ -8,7 +8,7 @@ import utility.ScriptChecker;
  * Класс команды clear, которая очищает коллекцию.
  */
 public class Clear extends Command{
-    public Clear(){
+    public Clear() {
         needScanner = false;
     }
     @Override
@@ -27,9 +27,8 @@ public class Clear extends Command{
      * @throws WrongNumberOfArgumentsException Если у команды clear был введен один или несколько аргументов.
      */
     @Override
-    public Command execute(String[] arguments, String login, String password) throws WrongNumberOfArgumentsException {
+    public Command execute(String[] arguments) throws WrongNumberOfArgumentsException {
         if (arguments.length>1) throw new WrongNumberOfArgumentsException();
-        setCommandArgument(login, password);
         if (ScriptChecker.isScriptInProcess) System.out.println(getName());
         return this;
     }

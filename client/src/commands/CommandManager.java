@@ -17,9 +17,9 @@ import network.RequestSender;
  */
 public class CommandManager {
     private Map<String, Command> commands;
-    private String login;
-    private String password;
-    public CommandManager(RequestSender sender, ResponseReceiver receiver, String login, String password) {
+    private RequestSender sender;
+    private ResponseReceiver receiver;
+    public CommandManager(RequestSender sender, ResponseReceiver receiver) {
         commands = new HashMap<>();
         commands.put("help", new Help());
         commands.put("info", new Info());
@@ -37,8 +37,8 @@ public class CommandManager {
         commands.put("group_counting_by_annual_turnover", new GroupCountingByAnnualTurnover());
         commands.put("print_unique_postal_address", new PrintUniquePostalAddress());
         commands.put("print_field_descending_type", new PrintFieldDescendingType());
-        this.login=login;
-        this.password=password;
+        this.sender = sender;
+        this.receiver = receiver;
     }
 
     /**
@@ -54,12 +54,12 @@ public class CommandManager {
             if (!commands.containsKey(arguments[0])) throw new WrongCommandNameException();
             Command command = commands.get(arguments[0]);
             if (command.needScanner) {
-                if (command.execute(scanner, arguments, login, password) == null) {
+                if (command.execute(scanner, arguments) == null) {
                     return null;
                 }
             }
             else
-                if (command.execute(arguments, login, password)==null) {
+                if (command.execute(arguments)==null) {
                     return null;
                 }
             return command;

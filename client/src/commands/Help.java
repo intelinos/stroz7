@@ -10,6 +10,8 @@ import java.util.Map;
  * Класс команды help, которая выводит справку о доступных командах.
  */
 public class Help extends Command {
+
+
     @Override
     public String getInfo() {
         return "Выводит справку о доступных командах. ";
@@ -26,9 +28,8 @@ public class Help extends Command {
      * @throws WrongNumberOfArgumentsException Если были введены аргументы команды.
      */
     @Override
-    public Command execute(String[] arguments, String login, String password) throws WrongNumberOfArgumentsException {
+    public Command execute(String[] arguments) throws WrongNumberOfArgumentsException {
         if (arguments.length>1) throw new WrongNumberOfArgumentsException();
-        setCommandArgument(login, password);
         if (ScriptChecker.isScriptInProcess) System.out.println(getName());
         return this;
     }

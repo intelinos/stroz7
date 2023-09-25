@@ -1,6 +1,8 @@
 import commands.Command;
 import commands.CommandManager;
-import network.*;
+import network.RequestSender;
+import network.ResponseReceiver;
+import network.TCPConnector;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -10,7 +12,6 @@ public class Client {
     CommandManager commandManager;
     RequestSender sender;
     ResponseReceiver receiver;
-    Authenticator authenticator;
     Scanner scanner;
     public void run(){
         connector = new TCPConnector();
@@ -18,9 +19,7 @@ public class Client {
         scanner = new Scanner(System.in);
         sender = new RequestSender(connector.getOutputStream());
         receiver = new ResponseReceiver(connector.getInputStream());
-        authenticator = new Authenticator(scanner, sender, receiver);
-        authenticator.authenticateUser();
-        commandManager = new CommandManager(sender, receiver, authenticator.getLogin(), authenticator.getPassword());
+        commandManager = new CommandManager(sender, receiver);
         while (true) {
             try {
                 Command command = commandManager.invokeCommand(scanner);
@@ -29,7 +28,6 @@ public class Client {
                 }
                 sender.sendRequest(command);
                 receiver.readResponse();
-                receiver.printMessage();
             } catch (NoSuchElementException e) {
                 System.out.println("Неверный ввод.");
                 scanner = new Scanner(System.in);

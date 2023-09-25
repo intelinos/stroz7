@@ -1,15 +1,11 @@
 package commands;
 
-import db.DBConnection;
-import exceptions.PermisionException;
 import exceptions.WrongArgumentException;
 import exceptions.WrongNumberOfArgumentsException;
 import response.Response;
 import utility.ScriptChecker;
 import validators.KeyValidator;
 import validators.Validator;
-
-import java.sql.SQLException;
 
 /**
  * Класс команды remove, которая удаляет из коллекции элемент с заданным ключом.
@@ -18,7 +14,6 @@ public class Remove extends Command {
     private Validator<Integer> keyValidator = new KeyValidator();
 
     public Remove() {
-        this.needDB=true;
         this.needScanner = false;
     }
 
@@ -33,7 +28,7 @@ public class Remove extends Command {
     }
 
     @Override
-    public Response execute(DBConnection dbConnection){
+    public Response execute(){
         System.out.println("Выполняется команда "+getName());
         if (collectionManager.getCollection().isEmpty()) {
             response = new Response("Коллекция пуста!");
@@ -43,17 +38,14 @@ public class Remove extends Command {
         try {
             if (!collectionManager.getCollection().containsKey(key))
                 throw new WrongArgumentException();
-            if(!dbConnection.checkOrganizationOwner(key, getCommandArgument().getLogin()))
-                throw new PermisionException("У вас нет доступа к этой организации.");
-            if(dbConnection.removeOrganization(key))
-                collectionManager.deleteFromTheCollection(key);
+            collectionManager.deleteFromTheCollection(key);
             response = new Response("Элемент в ключом " + key + " был удален.");
             System.out.println("Команда "+getName()+" была выполнена.");
+            return response;
         } catch (WrongArgumentException e) {
             ScriptChecker.clearScriptSet();
             response = new Response("Неверное значение ключа: ключ должен существовать в текущей коллекции.");
-        } catch (SQLException e){
-            response = new Response(e.getMessage());
-        } return response;
+            return response;
+        }
     }
 }

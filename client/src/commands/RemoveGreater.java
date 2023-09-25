@@ -34,12 +34,12 @@ public class RemoveGreater extends Command{
      * @throws WrongNumberOfArgumentsException Если были введены аргументы команды.
      */
     @Override
-    public Command execute(Scanner scanner, String[] arguments, String login, String password) throws WrongNumberOfArgumentsException {
+    public Command execute(Scanner scanner, String[] arguments) throws WrongNumberOfArgumentsException {
         if (arguments.length != 1) throw new WrongNumberOfArgumentsException();
         try {
             if (ScriptChecker.isScriptInProcess) System.out.println(getName());
             Organization organization = new OrganizationReguester(scanner).getOrganization();
-            setCommandArgument(organization, login, password);
+            setCommandArgument(organization);
             return this;
         } catch (WrongArgumentInRequestInScriptException e) {
             System.out.println("Произошла ошибка: "+e.getMessage());
