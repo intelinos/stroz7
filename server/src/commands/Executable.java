@@ -1,5 +1,6 @@
 package commands;
 
+import db.DBConnection;
 import exceptions.WrongNumberOfArgumentsException;
 import response.Response;
 
@@ -10,4 +11,5 @@ import java.util.Scanner;
  */
 public interface Executable {
     Response execute();
+    Response execute(DBConnection db);
 }

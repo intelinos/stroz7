@@ -2,10 +2,14 @@ import Organization.Organization;
 import Organization.Coordinates;
 import Organization.Address;
 import com.google.gson.GsonBuilder;
+import db.DBConnection;
+import db.Database;
 import request.CommandArgument;
 import request.Request;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.net.*;
@@ -13,6 +17,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,7 +33,15 @@ import utility.LocalDateTimeAdapter;
 
 public class Main {
     public static void main(String[] args) {
-        Server server = new Server(args[0]);
-        server.run();
+        try {
+            Database database = new Database(".pgpass");
+            DBConnection dbConnection = database.createConnection();
+            Server server = new Server(dbConnection);
+            server.run();
+        } catch(FileNotFoundException e){
+            System.out.println("Файл для работы с базой данных не обнаружен.\n"+e);
+        } catch(SQLException e){
+            System.out.println("Ошибка соединения с базой данных.\n"+e);
+        }
     }
 }

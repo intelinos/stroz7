@@ -18,7 +18,7 @@ import java.util.TreeMap;
  */
 public class FileManager {
     private Gson gson= new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                                        .setPrettyPrinting().create();
+            .setPrettyPrinting().create();
     public static File file;
     public FileManager(String arg) {
         file = new File(arg);

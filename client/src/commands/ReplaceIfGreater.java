@@ -33,14 +33,14 @@ public class ReplaceIfGreater extends Command{
      * @throws WrongNumberOfArgumentsException Если количество аргументов команды не равно одному.
      */
     @Override
-    public Command execute(Scanner scanner, String[] arguments) throws WrongNumberOfArgumentsException {
+    public Command execute(Scanner scanner, String[] arguments, String login, String password) throws WrongNumberOfArgumentsException {
         if (arguments.length != 2) throw new WrongNumberOfArgumentsException();
         try {
             if (ScriptChecker.isScriptInProcess) System.out.println(getName()+ " " + arguments[1].strip());
             int key = Integer.parseInt(arguments[1].strip());
             if (!keyValidator.validate(key)) throw new WrongArgumentException();
             Organization organization = new OrganizationReguester(scanner).getOrganization();
-            setCommandArgument(key+"", organization);
+            setCommandArgument(key+"", organization, login, password);
             return this;
         } catch (NumberFormatException  e){
             if (ScriptChecker.isScriptInProcess) {

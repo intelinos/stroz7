@@ -26,8 +26,7 @@ public class Info extends Command{
         response = new Response("Информация о коллекции:\n" +
                 "Тип коллекции: "+collectionManager.getCollection().getClass().getName() +"\n"+
                 "Размер коллекции: "+collectionManager.getCollection().size() +"\n"+
-                "Время инициализации: "+collectionManager.getInitiationDate() +"\n"+
-                "Время последнего сохранения: "+collectionManager.getLastTimeOfSaving());
+                "Время инициализации: "+collectionManager.getInitiationDate());
         System.out.println("Команда "+getName()+" была выполнена.");
         return response;
     }

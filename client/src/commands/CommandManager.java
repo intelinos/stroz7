@@ -17,9 +17,9 @@ import network.RequestSender;
  */
 public class CommandManager {
     private Map<String, Command> commands;
-    private RequestSender sender;
-    private ResponseReceiver receiver;
-    public CommandManager(RequestSender sender, ResponseReceiver receiver) {
+    private String login;
+    private String password;
+    public CommandManager(RequestSender sender, ResponseReceiver receiver, String login, String password) {
         commands = new HashMap<>();
         commands.put("help", new Help());
         commands.put("info", new Info());
@@ -37,8 +37,8 @@ public class CommandManager {
         commands.put("group_counting_by_annual_turnover", new GroupCountingByAnnualTurnover());
         commands.put("print_unique_postal_address", new PrintUniquePostalAddress());
         commands.put("print_field_descending_type", new PrintFieldDescendingType());
-        this.sender = sender;
-        this.receiver = receiver;
+        this.login=login;
+        this.password=password;
     }
 
     /**
@@ -54,14 +54,14 @@ public class CommandManager {
             if (!commands.containsKey(arguments[0])) throw new WrongCommandNameException();
             Command command = commands.get(arguments[0]);
             if (command.needScanner) {
-                if (command.execute(scanner, arguments) == null) {
+                if (command.execute(scanner, arguments, login, password) == null) {
                     return null;
                 }
             }
             else
-                if (command.execute(arguments)==null) {
-                    return null;
-                }
+            if (command.execute(arguments, login, password)==null) {
+                return null;
+            }
             return command;
         } catch (EmptyCommandNameException e) {
             if(ScriptChecker.isScriptInProcess)System.out.println("Имя команды не может быть пустым. ");

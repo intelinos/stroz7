@@ -26,14 +26,14 @@ public class Exit extends Command{
 
     @Override
     public Response execute(){
-        try {
-            System.out.println("Сохранение коллекции...");
-            collectionManager.saveCollectionToFile();
-            System.out.println("Остановка программы...");
-            System.exit(1);
-        } catch (IOException e){
-            System.out.println(e);
-        }
+        //try {
+        // System.out.println("Сохранение коллекции...");
+        //collectionManager.saveCollectionToFile();
+        System.out.println("Остановка программы...");
+        System.exit(1);
+        // } catch (IOException e){
+        //   System.out.println(e);
+        //}
 
         return null;
     }

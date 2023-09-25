@@ -43,11 +43,11 @@ public class ExecuteScript extends Command{
      * @throws WrongNumberOfArgumentsException Если не было введено аргументов команды, либо их количество больше одного.
      */
     @Override
-    public Command execute(String[] arguments) throws WrongNumberOfArgumentsException {
+    public Command execute(String[] arguments, String login, String password) throws WrongNumberOfArgumentsException {
         if (arguments.length != 2) throw new WrongNumberOfArgumentsException();
         try {
             fileName = arguments[1];
-            setCommandArgument(fileName);
+            setCommandArgument(fileName, login, password);
             File file = new File(fileName);
             if (!file.exists()) throw new FileNotFoundException();
             if (file.length() == 0) {
@@ -63,6 +63,7 @@ public class ExecuteScript extends Command{
                 if(command!=null) {
                     sender.sendRequest(command);
                     receiver.readResponse();
+                    receiver.printMessage();
                 }
                 if (ScriptChecker.isScriptSetEmpty()) {
                     ScriptChecker.isScriptInProcess = false;

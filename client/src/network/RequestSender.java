@@ -24,7 +24,7 @@ public class RequestSender {
     public void sendRequest(Command command) {
         try {
             Gson gson= new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                    .setPrettyPrinting().create();
+                    .setPrettyPrinting().setLenient().create();
             Request request = new Request(command.getName(), command.getCommandArgument());
             String gsonString = gson.toJson(request);
             byte[] arr = gsonString.getBytes();

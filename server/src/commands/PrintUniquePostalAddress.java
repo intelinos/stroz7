@@ -49,7 +49,7 @@ public class PrintUniquePostalAddress extends Command{
         return organizations
                 .stream()
                 .map(org -> org.getPostalAddress())
-                .filter(type -> type!=null)
+                .filter(address -> address!=null)
                 .distinct()
                 .toList();
     }

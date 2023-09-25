@@ -7,7 +7,7 @@ import utility.ScriptChecker;
  * Класс команды exit, которая останавливает работу программы.
  */
 public class Exit extends Command{
-    public Exit(){
+    public Exit() {
         this.needScanner=false;
     }
 
@@ -27,7 +27,7 @@ public class Exit extends Command{
      * @throws WrongNumberOfArgumentsException Если были введены аргументы команды.
      */
     @Override
-    public Command execute(String[] arguments) throws WrongNumberOfArgumentsException {
+    public Command execute(String[] arguments, String login, String password) throws WrongNumberOfArgumentsException {
         if (arguments.length>1) throw new WrongNumberOfArgumentsException();
         if (ScriptChecker.isScriptInProcess) System.out.println(getName());
         System.out.println("Остановка программы...");
