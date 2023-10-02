@@ -9,12 +9,17 @@ import utility.LocalDateTimeAdapter;
 import java.io.*;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.ByteChannel;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 public class ResponseReceiver {
+    private static final int SIZE = 300000;
     InputStream is;
     String message;
+    byte[] arr= new byte[SIZE];;
 
     public ResponseReceiver(InputStream is){
         this.is=is;
@@ -23,13 +28,18 @@ public class ResponseReceiver {
         try {
             Gson gson= new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                     .setPrettyPrinting().create();
-            byte[] arr = new byte[300000];
             //int j=0;
             BufferedInputStream bis = new BufferedInputStream(is);
-            bis.read(arr);
+            //arr = new byte[SIZE];
+            /*bis.read(arr,0,4);
+            int size = ByteBuffer.wrap(arr).getInt();
+            arr=new byte[size];*/
+            int size = bis.read(arr);
+            //ystem.out.println("\n"+arr.length);
             //System.out.println(j);
             Charset charset = Charset.defaultCharset();
-            String gsonStringResponse = new String(arr, charset);
+            String gsonStringResponse = new String(arr,charset);
+            Arrays.fill(arr, 0, size+1, (byte)0);
             //System.out.println(gsonStringResponse);
             Response response = gson.fromJson(gsonStringResponse.trim(), TypeToken.get(Response.class).getType());
             message = response.getResponseMessage();
@@ -40,7 +50,7 @@ public class ResponseReceiver {
             System.exit(1);
         }
     }
-    public String getMessage(){
+    public String getMessage() {
         return message;
     }
     public void printMessage(){

@@ -1,6 +1,7 @@
 package db;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.SQLException;
@@ -11,12 +12,13 @@ public class Database {
     private final String login;
     private final String password;
 
-    public Database(String file) throws FileNotFoundException {
-        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(file)))) {
+    public Database(File file) throws FileNotFoundException {
+            Scanner scanner = new Scanner(file);
             String[] lines = scanner.nextLine().split(":");
-            this.login = lines[3];
-            this.password = lines[4];
-        }
+            this.login = lines[3].trim();
+            this.password = lines[4].trim();
+            //System.out.println(login);
+            //System.out.println(password);
 
     }
 

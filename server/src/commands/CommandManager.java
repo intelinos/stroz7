@@ -30,7 +30,7 @@ public class CommandManager {
         commands.put("update", new Update());
         commands.put("remove", new Remove());
         commands.put("clear", new Clear());
-        commands.put("save", new Save());
+        //commands.put("save", new Save());
         commands.put("login_user", new LoginUser());
         commands.put("register_user", new RegisterUser());
         commands.put("execute_script", new ExecuteScript());

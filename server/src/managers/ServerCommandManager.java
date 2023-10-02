@@ -3,6 +3,7 @@ package managers;
 import com.google.gson.stream.JsonToken;
 import commandProcessing.CommandProcessor;
 import commands.Command;
+import commands.Exit;
 import exceptions.EmptyCommandNameException;
 import exceptions.WrongCommandNameException;
 import request.Request;
@@ -29,8 +30,8 @@ public class ServerCommandManager {
             }
             String commandName = (scanner.nextLine().trim());
             if (commandName.isEmpty() || commandName.isBlank()) throw new EmptyCommandNameException();
-            if (!commandName.equals("exit") && !commandName.equals("save")) throw new WrongCommandNameException();
-            processor.processRequest(new Request(commandName, null));
+            if (!commandName.equals("exit")) throw new WrongCommandNameException();
+            new Exit().execute();
         } catch (EmptyCommandNameException e) {
             System.out.println("Имя команды не может быть пустым. ");
         } catch (WrongCommandNameException e) {

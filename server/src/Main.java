@@ -34,7 +34,8 @@ import utility.LocalDateTimeAdapter;
 public class Main {
     public static void main(String[] args) {
         try {
-            Database database = new Database(".pgpass");
+            File file = new File(".pgpass");
+            Database database = new Database(file);
             DBConnection dbConnection = database.createConnection();
             Server server = new Server(dbConnection);
             server.run();

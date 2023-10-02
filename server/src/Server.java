@@ -35,7 +35,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
 public class Server {
-    ByteBuffer readBuf = ByteBuffer.allocate(50000);
+    ByteBuffer readBuf = ByteBuffer.allocate(5000);
     CommandProcessor processor;
     ForkJoinPool readingPool = new ForkJoinPool();
     ExecutorService writingPool = Executors.newCachedThreadPool();
@@ -133,32 +133,28 @@ public class Server {
     }
 
     private void requestProcessStart(SocketChannel sock, SelectionKey key) {
-        Runnable requestProcessStartTask = new Runnable() {
-            @Override
-            public void run() {
-                byte[] arr = readBuf.array();
-                Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                        .setPrettyPrinting().setLenient().create();
-                Charset charset = Charset.defaultCharset();
-                String gsonString = new String(arr, charset);
-                Request request = gson.fromJson(gsonString.trim(), TypeToken.get(Request.class).getType());
-                if (request == null) {
-                    key.cancel();
-                    try {
-                        sock.close();
-                    } catch (IOException ex) {
-                        System.out.println(ex);
-                    }
-                    return;
-                }
-                Response response = processor.processRequest(request);
+        Runnable requestProcessStartTask = () -> {
+            byte[] arr = readBuf.array();
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                    .setPrettyPrinting().setLenient().create();
+            Charset charset = Charset.defaultCharset();
+            String gsonString = new String(arr, charset);
+            Request request = gson.fromJson(gsonString.trim(), TypeToken.get(Request.class).getType());
+            if (request == null) {
+                key.cancel();
                 try {
-                    sock.register(selector, SelectionKey.OP_WRITE, response);
-                } catch (ClosedChannelException e) {
-                    System.out.println("Канал закрыт!\n" + e);
+                    sock.close();
+                } catch (IOException ex) {
+                    System.out.println(ex);
                 }
+                return;
             }
-
+            Response response = processor.processRequest(request);
+            try {
+                sock.register(selector, SelectionKey.OP_WRITE, response);
+            } catch (ClosedChannelException e) {
+                System.out.println("Канал закрыт!\n" + e);
+            }
         };
         Thread requestProcessStartThread = new Thread(requestProcessStartTask);
         requestProcessStartThread.start();
@@ -176,8 +172,12 @@ public class Server {
             byte[] arrResponse = gsonStringResponse.getBytes();
             // System.out.println(arrResponse.length);
             ByteBuffer buf = ByteBuffer.wrap(arrResponse);
+            /*int arrSize = arrResponse.length;
+            ByteBuffer bufSize = ByteBuffer.allocate(4);
+            bufSize.putInt(arrSize);*/
             try {
                 // int i=0;
+               // sock.write(bufSize);
                 while (buf.hasRemaining()) {
                     sock.write(buf);
                     //   i++;
